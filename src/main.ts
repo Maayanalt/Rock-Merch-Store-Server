@@ -17,11 +17,6 @@ async function bootstrap() {
       cookie: { secure: false },
     }),
   );
-  //To configure Fastify, which is Express competitor:
-  // const app = await NestFactory.create<NestFastifyApplication>(
-  // AppModule,
-  // new FastifyAdapter(),
-  // );
   app.setGlobalPrefix('api');
   await app.listen(3200);
 }
