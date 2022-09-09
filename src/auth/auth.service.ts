@@ -12,12 +12,14 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string) {
+    console.log('auth');
     const user = await this.usersService.findByEmail(email);
+    let id = 0;
     if (user) {
       bcrypt.compare(password, user.password).then(function (result) {
-        if (result) return user.id;
+        if (result) id = user.id;
       });
     }
-    return user;
+    return id;
   }
 }
