@@ -1,4 +1,10 @@
-import { IsEmail, IsMobilePhone, IsNotEmpty, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsMobilePhone,
+  IsNotEmpty,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class UsersDto {
   id: number;
@@ -14,7 +20,7 @@ export class UsersDto {
   email: string;
 
   @IsNotEmpty()
-  @Min(8)
+  @MinLength(8)
   password: string;
 
   address: string | undefined;
@@ -32,6 +38,6 @@ export class LoginDto {
   email: string;
 
   @IsNotEmpty()
-  @Min(8)
+  @MinLength(8)
   password: string;
 }
