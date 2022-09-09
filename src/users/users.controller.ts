@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
@@ -28,19 +29,18 @@ export class UsersController {
   }
 
   @Post('/login')
+  @HttpCode(200)
   @UsePipes(new ValidationPipe())
   async login(
     @Body() userLogin: LoginDto,
     @Session() session: Record<string, any>,
   ) {
-    console.log('route');
     const userID = await this.authService.validateUser(
       userLogin.email,
       userLogin.password,
     );
     if (userID) {
       session.userID = userID;
-      return true;
     } else {
       throw new UnauthorizedException();
     }
