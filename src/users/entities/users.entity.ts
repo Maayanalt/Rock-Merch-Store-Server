@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Cart } from 'src/cart/entities/cart.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Users {
@@ -31,4 +32,7 @@ export class Users {
 
   @Column({ length: 25, nullable: true })
   phone: string | undefined;
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  cart: Cart;
 }
