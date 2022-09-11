@@ -39,6 +39,25 @@ export class ItemsService {
     return newItems;
   }
 
+  async getOneItem(id: number): Promise<Items> {
+    const item = await this.itemsRepository.findOne({ id });
+    const images = await this.photoRepository.find({
+      where: { item: { id } },
+      select: ['src', 'alt'],
+    });
+    const sizes = await this.detailsRepository.find({
+      where: { item: { id } },
+      select: ['size', 'unitsInStock'],
+    });
+    const newItem = this.itemsRepository.create({
+      ...item,
+      images,
+      sizes,
+    });
+
+    return newItem;
+  }
+
   async getCategories(): Promise<Categories[]> {
     return this.categoriesRepository.find({
       where: { parentCategory: null },
