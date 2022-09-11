@@ -1,3 +1,4 @@
+import { CartDetails } from 'src/cart/entities/cartDetails.entity';
 import {
   Column,
   Entity,
@@ -41,4 +42,7 @@ export class Items {
 
   @ManyToOne(() => Categories, (category) => category.items)
   category: Categories;
+
+  @OneToMany(() => CartDetails, (cartDetails) => cartDetails.item)
+  cartDetails: CartDetails[];
 }
