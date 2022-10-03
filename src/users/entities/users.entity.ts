@@ -1,5 +1,12 @@
 import { Cart } from 'src/cart/entities/cart.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Wishlist } from 'src/wishlist/entities/wishlist.entity';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Users {
@@ -35,4 +42,7 @@ export class Users {
 
   @OneToOne(() => Cart, (cart) => cart.user)
   cart: Cart;
+
+  @OneToMany(() => Wishlist, (wihslist) => wihslist.user)
+  wishlist: Wishlist[];
 }
