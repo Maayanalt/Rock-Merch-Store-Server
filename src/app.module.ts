@@ -6,6 +6,7 @@ import { CartModule } from './cart/cart.module';
 import { typeORMConfig } from './config/typeorm.config';
 import { ItemsModule } from './items/items.module';
 import { UsersModule } from './users/users.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UsersModule } from './users/users.module';
     ItemsModule,
     UsersModule,
     CartModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
