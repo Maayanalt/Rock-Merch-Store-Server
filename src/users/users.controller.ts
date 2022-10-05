@@ -9,6 +9,7 @@ import {
   Post,
   Session,
   UnauthorizedException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { LoginDto } from './users-dto';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { CartService } from 'src/cart/cart.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -31,6 +33,7 @@ export class UsersController {
   }
 
   @Get('cart')
+  @UseGuards(AuthGuard)
   async getCart(@Session() session: Record<string, any>) {
     const userID = session.userID;
     const { id } = await this.usersService.getCart(userID);
