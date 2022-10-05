@@ -33,7 +33,7 @@ export class UsersController {
   @Get('cart')
   async getCart(@Session() session: Record<string, any>) {
     const userID = session.userID;
-    const { id } = await this.usersService.findCartGetID(userID);
+    const { id } = await this.usersService.getCart(userID);
     return this.cartService.findCartDetails(id);
   }
 
