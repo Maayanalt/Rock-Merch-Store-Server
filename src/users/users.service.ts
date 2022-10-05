@@ -20,10 +20,7 @@ export class UsersService {
     return this.usersRipo.findByEmail(email);
   }
 
-  findCartGetID(id: number): Promise<Cart> {
-    return this.cartRepository.findOne({
-      where: { user: id },
-      select: ['id'],
-    });
+  getCart(id: number): Promise<Cart> {
+    return this.usersRipo.getCart(id);
   }
 }
