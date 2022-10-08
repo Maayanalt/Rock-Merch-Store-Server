@@ -58,10 +58,14 @@ export class ItemsService {
     return newItem;
   }
 
-  async getCategories(): Promise<Categories[]> {
+  getCategories(): Promise<Categories[]> {
     return this.categoriesRepository.find({
       where: { parentCategory: null },
       relations: ['childCategories'],
     });
+  }
+
+  findOne(id: number): Promise<Items> {
+    return this.itemsRepository.findOne(id);
   }
 }
