@@ -38,4 +38,11 @@ export class WishlistService {
     }
     return newItems;
   }
+
+  remove(userId: number, itemId: number) {
+    return this.wishlistRepository.delete({
+      user: { id: userId },
+      item: { id: itemId },
+    });
+  }
 }
