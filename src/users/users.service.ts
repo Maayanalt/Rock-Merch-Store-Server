@@ -7,10 +7,7 @@ import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private usersRipo: UsersRepository,
-    @InjectRepository(Cart) private cartRepository: Repository<Cart>,
-  ) {}
+  constructor(private usersRipo: UsersRepository) {}
 
   find(id: number): Promise<Users> {
     return this.usersRipo.findOne(id);
@@ -18,9 +15,5 @@ export class UsersService {
 
   findByEmail(email: string): Promise<Users> {
     return this.usersRipo.findByEmail(email);
-  }
-
-  getCart(id: number): Promise<Cart> {
-    return this.usersRipo.getCart(id);
   }
 }
