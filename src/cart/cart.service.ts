@@ -20,7 +20,7 @@ export class CartService {
 
   findOne(id: number) {
     return this.cartRepository.findOne({
-      where: { id },
+      where: { user: { id } },
       relations: ['user'],
     });
   }
