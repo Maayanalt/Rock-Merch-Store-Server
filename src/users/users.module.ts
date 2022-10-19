@@ -11,7 +11,6 @@ import { Cart } from 'src/cart/entities/cart.entity';
   imports: [
     TypeOrmModule.forFeature([UsersRepository, Cart]),
     forwardRef(() => AuthModule),
-    CartModule,
   ],
   providers: [UsersService],
   controllers: [UsersController],

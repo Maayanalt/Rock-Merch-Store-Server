@@ -7,12 +7,4 @@ export class UsersRepository extends Repository<Users> {
   findByEmail(email: string) {
     return this.findOne({ email });
   }
-
-  async getCart(id: number): Promise<Cart> {
-    const user = await this.findOne({
-      where: { id },
-      relations: ['cart'],
-    });
-    return user.cart;
-  }
 }
