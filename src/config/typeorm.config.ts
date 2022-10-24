@@ -7,7 +7,7 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   port: 3306,
   username: 'root',
   password: 'Aa123456',
-  database: 'customers',
+  database: 'rock_merch',
   entities: ['dist/**/*.entity{.ts,.js}'],
   synchronize: true,
 };
