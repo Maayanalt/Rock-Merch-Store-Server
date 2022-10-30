@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemsService } from 'src/items/items.service';
 import { Repository } from 'typeorm';
+import { CartDto } from './dto/cart.dto';
+import { CartDetailsDto } from './dto/cartDetails.dto';
 import { Cart } from './entities/cart.entity';
 import { CartDetails } from './entities/cartDetails.entity';
 
@@ -13,6 +15,30 @@ export class CartService {
     private cartDetailsRepository: Repository<CartDetails>,
     private itemsService: ItemsService,
   ) {}
+
+  createCart(cartDto: CartDto) {
+    const cart = this.cartRepository.create(cartDto);
+    return this.cartRepository.save(cart);
+  }
+
+  async createCartDetails(
+    cartDetailsDto: CartDetailsDto,
+    userID: number,
+    modifiedDate: Date,
+  ) {
+    const { itemID, quantity, size } = cartDetailsDto;
+    let cart = await this.findOne(userID);
+    if (!cart) cart = await this.createCart({ userID, modifiedDate });
+    else this.updateCart(cart.id, modifiedDate);
+    const item = await this.itemsService.findOne(itemID);
+    const cartDetails = this.cartDetailsRepository.create({
+      cart,
+      item,
+      size,
+      quantity,
+    });
+    this.cartDetailsRepository.save(cartDetails);
+  }
 
   findAll() {
     return this.cartRepository.find();
@@ -40,5 +66,9 @@ export class CartService {
       newCartItems.push(newItem);
     }
     return newCartItems;
+  }
+
+  updateCart(id: number, modifiedDate: Date) {
+    this.cartRepository.update(id, { modifiedDate });
   }
 }
