@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Session,
   UseGuards,
@@ -42,5 +43,19 @@ export class CartController {
       return this.cartService.findCartDetails(id);
     }
     return [];
+  }
+
+  @Patch('update')
+  @UseGuards(AuthGuard)
+  update(
+    @Body() cartDetailsDto: CartDetailsDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const date = new Date();
+    return this.cartService.updateCartDetails(
+      cartDetailsDto,
+      session.userID,
+      date,
+    );
   }
 }
