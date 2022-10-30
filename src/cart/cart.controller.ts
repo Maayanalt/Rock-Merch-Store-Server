@@ -1,10 +1,36 @@
-import { Controller, Get, Param, Session, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Session,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CartValidatorPipe } from 'src/pipes/cart-validator.pipe';
 import { CartService } from './cart.service';
+import { CartDetailsDto } from './dto/cartDetails.dto';
 
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
+
+  @Post()
+  @UseGuards(AuthGuard)
+  @UsePipes(CartValidatorPipe)
+  create(
+    @Body() cartDetailsDto: CartDetailsDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const date = new Date();
+    return this.cartService.createCartDetails(
+      cartDetailsDto,
+      session.userID,
+      date,
+    );
+  }
 
   @Get()
   @UseGuards(AuthGuard)
@@ -16,10 +42,5 @@ export class CartController {
       return this.cartService.findCartDetails(id);
     }
     return [];
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(+id);
   }
 }
