@@ -71,4 +71,18 @@ export class CartService {
   updateCart(id: number, modifiedDate: Date) {
     this.cartRepository.update(id, { modifiedDate });
   }
+
+  async updateCartDetails(
+    cartDetailsDto: CartDetailsDto,
+    userID: number,
+    modifiedDate: Date,
+  ) {
+    const { itemID, quantity, size } = cartDetailsDto;
+    const cart = await this.findOne(userID);
+    this.updateCart(cart.id, modifiedDate);
+    this.cartDetailsRepository.update(
+      { item: { id: itemID }, cart },
+      { quantity, size },
+    );
+  }
 }
