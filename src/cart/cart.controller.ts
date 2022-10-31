@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -57,5 +58,21 @@ export class CartController {
       session.userID,
       date,
     );
+  }
+
+  @Delete(':itemId')
+  @UseGuards(AuthGuard)
+  remove(
+    @Param('itemId') itemId: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const date = new Date();
+    return this.cartService.removeCartDetails(+itemId, session.userID, date);
+  }
+
+  @Delete()
+  @UseGuards(AuthGuard)
+  removeCart(@Session() session: Record<string, any>) {
+    return this.cartService.removeCart(session.userID);
   }
 }

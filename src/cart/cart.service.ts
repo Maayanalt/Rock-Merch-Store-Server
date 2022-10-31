@@ -85,4 +85,14 @@ export class CartService {
       { quantity, size },
     );
   }
+
+  async removeCartDetails(itemID: number, userID: number, modifiedDate: Date) {
+    const cart = await this.findOne(userID);
+    this.updateCart(cart.id, modifiedDate);
+    return this.cartDetailsRepository.delete({ item: { id: itemID }, cart });
+  }
+
+  async removeCart(id: number) {
+    return this.cartRepository.delete({ user: { id } });
+  }
 }
