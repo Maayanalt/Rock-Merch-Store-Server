@@ -21,12 +21,37 @@ export class CartService {
     return this.cartRepository.save(cart);
   }
 
+  async itemAlreadyInCart(
+    itemID: number,
+    size: string,
+    userID: number,
+    modifiedDate: Date,
+  ) {
+    const itemCart = await this.findItem(itemID);
+    if (itemCart && itemCart.size === size) {
+      this.updateCartDetails(
+        { itemID, quantity: itemCart.quantity + 1, size },
+        userID,
+        modifiedDate,
+      );
+      return true;
+    }
+    return false;
+  }
+
+  findItem(id: number) {
+    return this.cartDetailsRepository.findOne({
+      where: { item: { id } },
+    });
+  }
+
   async createCartDetails(
     cartDetailsDto: CartDetailsDto,
     userID: number,
     modifiedDate: Date,
   ) {
     const { itemID, quantity, size } = cartDetailsDto;
+    if (this.itemAlreadyInCart(itemID, size, userID, modifiedDate)) return;
     let cart = await this.findOne(userID);
     if (!cart) cart = await this.createCart({ userID, modifiedDate });
     else this.updateCart(cart.id, modifiedDate);
