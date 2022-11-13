@@ -51,7 +51,8 @@ export class CartService {
     modifiedDate: Date,
   ) {
     const { itemID, quantity, size } = cartDetailsDto;
-    if (this.itemAlreadyInCart(itemID, size, userID, modifiedDate)) return;
+    if (await this.itemAlreadyInCart(itemID, size, userID, modifiedDate))
+      return;
     let cart = await this.findOne(userID);
     if (!cart) cart = await this.createCart({ userID, modifiedDate });
     else this.updateCart(cart.id, modifiedDate);
