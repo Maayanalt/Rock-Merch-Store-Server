@@ -1,4 +1,5 @@
 import { Cart } from 'src/cart/entities/cart.entity';
+import { Orders } from 'src/orders/entities/orders.entity';
 import { Wishlist } from 'src/wishlist/entities/wishlist.entity';
 import {
   Column,
@@ -45,4 +46,7 @@ export class Users {
 
   @OneToMany(() => Wishlist, (wihslist) => wihslist.user)
   wishlist: Wishlist[];
+
+  @OneToMany(() => Orders, (order) => order.user)
+  orders: Orders[];
 }
