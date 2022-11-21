@@ -33,7 +33,7 @@ export class UsersController {
   @Get()
   @UseGuards(AuthGuard)
   findOneUser(@Session() session: Record<string, any>) {
-    return this.usersService.find(session.userIDy);
+    return this.usersService.find(session.userID);
   }
 
   @Post('/login')
@@ -52,19 +52,6 @@ export class UsersController {
     } else {
       throw new UnauthorizedException();
     }
-  }
-
-  @Get(':id')
-  findCustomer(
-    @Param(
-      'id',
-      new ParseIntPipe({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-      }),
-    )
-    id: number,
-  ) {
-    return this.usersService.find(id);
   }
 
   @Post('logout')
