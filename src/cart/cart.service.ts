@@ -121,4 +121,8 @@ export class CartService {
   async removeCart(id: number) {
     return this.cartRepository.delete({ user: { id } });
   }
+
+  async removeAllCartDetails(id: number) {
+    return this.cartDetailsRepository.delete({ cart: { id } });
+  }
 }
