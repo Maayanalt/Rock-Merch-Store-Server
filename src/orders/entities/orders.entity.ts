@@ -15,7 +15,7 @@ export class Orders {
   id: number;
 
   @Column({ nullable: false, type: 'datetime', name: 'order_date' })
-  orderDate: number;
+  orderDate: Date;
 
   @Column({ nullable: false, name: 'required_date', type: 'date' })
   requiredDate: Date;
@@ -44,6 +44,9 @@ export class Orders {
     nullable: false,
   })
   totalCost: number;
+
+  @Column({ length: 25, nullable: false })
+  phone: string;
 
   @ManyToOne(() => Users, (user) => user.orders)
   user: Users;
