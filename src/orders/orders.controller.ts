@@ -1,10 +1,30 @@
-import { Controller, Get, Session, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Session,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { OrderDto } from './dto/order.dto';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  @Post()
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
+  async createOrder(
+    @Body() orderDto: OrderDto,
+    @Session() session: Record<string, any>,
+  ) {
+    return this.ordersService.createOrderDetails(orderDto, session.userID);
+  }
 
   @Get()
   @UseGuards(AuthGuard)
