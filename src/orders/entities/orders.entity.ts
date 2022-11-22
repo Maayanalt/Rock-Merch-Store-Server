@@ -20,7 +20,7 @@ export class Orders {
   @Column({ nullable: false, name: 'required_date', type: 'date' })
   requiredDate: Date;
 
-  @Column({ name: 'shipped_date', type: 'date' })
+  @Column({ name: 'shipped_date', type: 'date', nullable: true })
   shippedDate: Date;
 
   @Column({ length: 50, nullable: false })
