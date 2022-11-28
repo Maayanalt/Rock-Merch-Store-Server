@@ -1,9 +1,12 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Cart } from './cart.entity';
 import { Items } from 'src/items/entities/items.entity';
 
 @Entity()
 export class CartDetails {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({ type: 'tinyint' })
   quantity: number;
 
