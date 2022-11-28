@@ -13,7 +13,8 @@ import {
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CartValidatorPipe } from 'src/pipes/cart-validator.pipe';
 import { CartService } from './cart.service';
-import { CartDetailsDto } from './dto/cartDetails.dto';
+import { CreateCartDetailsDto } from './dto/createCartDetails.dto';
+import { UpdateCartDetailsDto } from './dto/updateCartDetails.dto';
 
 @Controller('cart')
 export class CartController {
@@ -23,7 +24,7 @@ export class CartController {
   @UseGuards(AuthGuard)
   @UsePipes(CartValidatorPipe)
   create(
-    @Body() cartDetailsDto: CartDetailsDto,
+    @Body() cartDetailsDto: CreateCartDetailsDto,
     @Session() session: Record<string, any>,
   ) {
     const date = new Date();
@@ -48,26 +49,36 @@ export class CartController {
 
   @Patch('update')
   @UseGuards(AuthGuard)
-  update(
-    @Body() cartDetailsDto: CartDetailsDto,
+  async update(
+    @Body() cartDetailsDto: UpdateCartDetailsDto,
     @Session() session: Record<string, any>,
   ) {
     const date = new Date();
-    return this.cartService.updateCartDetails(
-      cartDetailsDto,
+    this.cartService.updateCartDetails(cartDetailsDto, session.userID, date);
+  }
+
+  @Patch('update/duplicates')
+  @UseGuards(AuthGuard)
+  async updateDuplicates(
+    @Body() cartDetailsDto: UpdateCartDetailsDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const date = new Date();
+    this.cartService.duplicatesInCart(cartDetailsDto, session.userID, date);
+  }
+
+  @Delete(':cartDetailID')
+  @UseGuards(AuthGuard)
+  remove(
+    @Param('cartDetailID') cartDetailID: string,
+    @Session() session: Record<string, any>,
+  ) {
+    const date = new Date();
+    return this.cartService.removeCartDetails(
+      +cartDetailID,
       session.userID,
       date,
     );
-  }
-
-  @Delete(':itemId')
-  @UseGuards(AuthGuard)
-  remove(
-    @Param('itemId') itemId: string,
-    @Session() session: Record<string, any>,
-  ) {
-    const date = new Date();
-    return this.cartService.removeCartDetails(+itemId, session.userID, date);
   }
 
   @Delete()
