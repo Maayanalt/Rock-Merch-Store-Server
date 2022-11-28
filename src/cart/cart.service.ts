@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ItemsService } from 'src/items/items.service';
 import { Repository } from 'typeorm';
 import { CartDto } from './dto/cart.dto';
-import { CartDetailsDto } from './dto/cartDetails.dto';
+import { CreateCartDetailsDto } from './dto/createCartDetails.dto';
+import { UpdateCartDetailsDto } from './dto/updateCartDetails.dto';
 import { Cart } from './entities/cart.entity';
 import { CartDetails } from './entities/cartDetails.entity';
 
@@ -21,16 +22,43 @@ export class CartService {
     return this.cartRepository.save(cart);
   }
 
-  async itemAlreadyInCart(
-    itemID: number,
-    size: string,
+  async duplicatesInCart(
+    cartDetailsDto: UpdateCartDetailsDto,
     userID: number,
     modifiedDate: Date,
   ) {
-    const itemCart = await this.findItem(itemID);
-    if (itemCart && itemCart.size === size) {
+    const { itemID, size, quantity, cartDetailID } = cartDetailsDto;
+    const cart = await this.findOne(userID);
+    const itemCart = await this.findItem(itemID, size, cart);
+    await this.removeCartDetails(cartDetailID, userID, modifiedDate);
+    this.updateCartDetails(
+      {
+        cartDetailID: itemCart.id,
+        size,
+        quantity: Number(quantity),
+        itemID,
+      },
+      userID,
+      modifiedDate,
+    );
+  }
+
+  async itemAlreadyInCart(
+    cartDetailsDto: CreateCartDetailsDto,
+    userID: number,
+    modifiedDate: Date,
+  ) {
+    const { itemID, size, quantity } = cartDetailsDto;
+    const cart = await this.findOne(userID);
+    const itemCart = await this.findItem(itemID, size, cart);
+    if (itemCart) {
       this.updateCartDetails(
-        { itemID, quantity: itemCart.quantity + 1, size },
+        {
+          cartDetailID: itemCart.id,
+          quantity: Number(itemCart.quantity) + Number(quantity),
+          size,
+          itemID,
+        },
         userID,
         modifiedDate,
       );
@@ -39,20 +67,21 @@ export class CartService {
     return false;
   }
 
-  findItem(id: number) {
+  findItem(itemId: number, size: string, cart: Cart) {
     return this.cartDetailsRepository.findOne({
-      where: { item: { id } },
+      where: { item: { id: itemId }, size, cart },
     });
   }
 
   async createCartDetails(
-    cartDetailsDto: CartDetailsDto,
+    cartDetailsDto: CreateCartDetailsDto,
     userID: number,
     modifiedDate: Date,
   ) {
     const { itemID, quantity, size } = cartDetailsDto;
-    if (await this.itemAlreadyInCart(itemID, size, userID, modifiedDate))
+    if (await this.itemAlreadyInCart(cartDetailsDto, userID, modifiedDate)) {
       return;
+    }
     let cart = await this.findOne(userID);
     if (!cart) cart = await this.createCart({ userID, modifiedDate });
     else this.updateCart(cart.id, modifiedDate);
@@ -99,23 +128,24 @@ export class CartService {
   }
 
   async updateCartDetails(
-    cartDetailsDto: CartDetailsDto,
+    cartDetailsDto: UpdateCartDetailsDto,
     userID: number,
     modifiedDate: Date,
   ) {
-    const { itemID, quantity, size } = cartDetailsDto;
+    const { cartDetailID, quantity, size } = cartDetailsDto;
     const cart = await this.findOne(userID);
     this.updateCart(cart.id, modifiedDate);
-    this.cartDetailsRepository.update(
-      { item: { id: itemID }, cart },
-      { quantity, size },
-    );
+    this.cartDetailsRepository.update({ id: cartDetailID }, { quantity, size });
   }
 
-  async removeCartDetails(itemID: number, userID: number, modifiedDate: Date) {
+  async removeCartDetails(
+    cartDetailID: number,
+    userID: number,
+    modifiedDate: Date,
+  ) {
     const cart = await this.findOne(userID);
     this.updateCart(cart.id, modifiedDate);
-    return this.cartDetailsRepository.delete({ item: { id: itemID }, cart });
+    return this.cartDetailsRepository.delete({ id: cartDetailID });
   }
 
   async removeCart(id: number) {
