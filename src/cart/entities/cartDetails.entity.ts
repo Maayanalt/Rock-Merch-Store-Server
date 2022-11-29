@@ -13,9 +13,9 @@ export class CartDetails {
   @Column({ length: 10, nullable: true })
   size: string;
 
-  @ManyToOne(() => Cart, (cart) => cart.cartDetails, { primary: true })
+  @ManyToOne(() => Cart, (cart) => cart.cartDetails)
   cart: Cart;
 
-  @ManyToOne(() => Items, (item) => item.cartDetails, { primary: true })
+  @ManyToOne(() => Items, (item) => item.cartDetails)
   item: Items;
 }
