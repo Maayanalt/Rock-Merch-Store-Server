@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Session,
   UnauthorizedException,
@@ -13,7 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { LoginDto } from './users-dto';
+import { LoginDto } from './dto/login.dto';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/auth.guard';
