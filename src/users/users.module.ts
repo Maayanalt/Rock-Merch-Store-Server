@@ -1,11 +1,17 @@
-import { forwardRef, Module } from '@nestjs/common';
+import {
+  forwardRef,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
-import { CartModule } from 'src/cart/cart.module';
 import { Cart } from 'src/cart/entities/cart.entity';
+import { ValidatePasswordMiddleware } from 'src/middlewares/validate-password.middleware';
 
 @Module({
   imports: [
@@ -16,4 +22,10 @@ import { Cart } from 'src/cart/entities/cart.entity';
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ValidatePasswordMiddleware)
+      .forRoutes({ path: 'users/update', method: RequestMethod.PATCH });
+  }
+}
