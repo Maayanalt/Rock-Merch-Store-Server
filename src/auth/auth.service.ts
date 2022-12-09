@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+  ) {}
 
   availableEmail(email: string) {
     if (this.usersService.findByEmail(email)) return false;
@@ -15,12 +18,25 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
     let id = 0;
     if (user) {
-      await bcrypt.compare(password, user.password).then(function (result) {
-        if (result) {
-          id = user.id;
-        }
-      });
+      if (await this.validPassword(password, user.password)) id = user.id;
     }
     return id;
+  }
+
+  validPassword(password: string, hashedPassword: string) {
+    return bcrypt.compare(password, hashedPassword);
+  }
+
+  async validatePassword(password: string, userID: number) {
+    const user = await this.usersService.getPassword(userID);
+    let valid = false;
+    if (user) {
+      if (await this.validPassword(password, user.password)) valid = true;
+    }
+    return valid;
+  }
+
+  hashPassword(password: string) {
+    return bcrypt.hash(password, 10);
   }
 }
