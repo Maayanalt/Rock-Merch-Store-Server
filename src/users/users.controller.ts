@@ -1,10 +1,12 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Session,
   UnauthorizedException,
@@ -16,6 +18,7 @@ import { LoginDto } from './dto/login.dto';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UpdateDto } from './dto/updateUser.dto';
 
 @Controller('users')
 export class UsersController {
@@ -57,5 +60,15 @@ export class UsersController {
   @HttpCode(200)
   logout(@Session() session: Record<string, any>) {
     session.destroy();
+  }
+
+  @Patch('update')
+  @UseGuards(AuthGuard)
+  async update(
+    @Body() userUpdateDto: UpdateDto,
+    @Session() session: Record<string, any>,
+  ) {
+    if (!(await this.usersService.update(userUpdateDto, session.userID)))
+      throw new BadRequestException('Email already exist');
   }
 }
