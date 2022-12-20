@@ -9,8 +9,8 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  availableEmail(email: string) {
-    if (this.usersService.findByEmail(email)) return false;
+  async availableEmail(email: string) {
+    if (await this.usersService.findByEmail(email)) return false;
     return true;
   }
 
