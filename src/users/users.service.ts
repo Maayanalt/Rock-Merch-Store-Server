@@ -38,6 +38,10 @@ export class UsersService {
       this.usersRipo.update({ id: userID }, { password: newPassword });
       return true;
     }
+    for (const property in updates) {
+      const value = updates[property];
+      this.usersRipo.update({ id: userID }, { [property]: value });
+    }
     return true;
   }
 }
