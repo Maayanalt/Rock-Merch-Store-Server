@@ -27,9 +27,10 @@ export class UsersService {
   async update(updates: UpdateDto, userID: number) {
     if (updates.email) {
       const validMail = await this.authService.availableEmail(updates.email);
-      if (validMail)
+      if (validMail) {
         this.usersRipo.update({ id: userID }, { email: updates.email });
-      else return false;
+        return true;
+      } else return false;
     }
     if (updates.newPassword) {
       const newPassword = await this.authService.hashPassword(
