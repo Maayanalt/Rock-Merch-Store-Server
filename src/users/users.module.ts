@@ -12,6 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { ValidatePasswordMiddleware } from 'src/middlewares/validate-password.middleware';
+import { ValidateEmailMiddleware } from 'src/middlewares/validate-email.middleware';
 
 @Module({
   imports: [
@@ -27,5 +28,9 @@ export class UsersModule implements NestModule {
     consumer
       .apply(ValidatePasswordMiddleware)
       .forRoutes({ path: 'users/update', method: RequestMethod.PATCH });
+
+    consumer
+      .apply(ValidateEmailMiddleware)
+      .forRoutes({ path: 'users/register', method: RequestMethod.POST });
   }
 }
