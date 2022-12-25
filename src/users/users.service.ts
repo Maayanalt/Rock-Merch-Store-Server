@@ -1,5 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
+import { RegisterDto } from './dto/register.dto';
 import { UpdateDto } from './dto/updateUser.dto';
 import { Users } from './entities/users.entity';
 import { UsersRepository } from './users.repository';
@@ -44,5 +45,15 @@ export class UsersService {
       this.usersRipo.update({ id: userID }, { [property]: value });
     }
     return true;
+  }
+
+  async createUser(registerDto: RegisterDto) {
+    const { password } = registerDto;
+    const hashedPassword = await this.authService.hashPassword(password);
+    const user = this.usersRipo.create({
+      ...registerDto,
+      password: hashedPassword,
+    });
+    this.usersRipo.save(user);
   }
 }

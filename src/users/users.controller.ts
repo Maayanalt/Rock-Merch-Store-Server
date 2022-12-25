@@ -19,6 +19,7 @@ import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UpdateDto } from './dto/updateUser.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('users')
 export class UsersController {
@@ -60,6 +61,12 @@ export class UsersController {
   @HttpCode(200)
   logout(@Session() session: Record<string, any>) {
     session.destroy();
+  }
+
+  @Post('register')
+  @UsePipes(new ValidationPipe())
+  register(@Body() registerDto: RegisterDto) {
+    this.usersService.createUser(registerDto);
   }
 
   @Patch('update')
