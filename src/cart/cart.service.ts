@@ -18,7 +18,11 @@ export class CartService {
   ) {}
 
   createCart(cartDto: CartDto) {
-    const cart = this.cartRepository.create(cartDto);
+    const { userID, modifiedDate } = cartDto;
+    const cart = this.cartRepository.create({
+      modifiedDate,
+      user: { id: userID },
+    });
     return this.cartRepository.save(cart);
   }
 
