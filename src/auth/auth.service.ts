@@ -1,12 +1,14 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    private configService: ConfigService,
   ) {}
 
   async availableEmail(email: string) {
@@ -37,6 +39,7 @@ export class AuthService {
   }
 
   hashPassword(password: string) {
-    return bcrypt.hash(password, 10);
+    const salt = parseInt(this.configService.get('SALT'));
+    return bcrypt.hash(password, salt);
   }
 }
