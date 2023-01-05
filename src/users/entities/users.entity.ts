@@ -1,6 +1,7 @@
 import { Cart } from 'src/cart/entities/cart.entity';
 import { Orders } from 'src/orders/entities/orders.entity';
 import { Wishlist } from 'src/wishlist/entities/wishlist.entity';
+import { ResetPassword } from 'src/reset-password/entities/reset-password.entity';
 import {
   Column,
   Entity,
@@ -49,4 +50,7 @@ export class Users {
 
   @OneToMany(() => Orders, (order) => order.user)
   orders: Orders[];
+
+  @OneToMany(() => ResetPassword, (reset) => reset.user)
+  resetPassword: ResetPassword[];
 }
