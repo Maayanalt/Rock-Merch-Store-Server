@@ -4,6 +4,6 @@ import { Users } from './entities/users.entity';
 @EntityRepository(Users)
 export class UsersRepository extends Repository<Users> {
   findByEmail(email: string) {
-    return this.findOne({ email }, { select: ['password', 'id'] });
+    return this.findOne({ email }, { select: ['password', 'id', 'firstName'] });
   }
 }
