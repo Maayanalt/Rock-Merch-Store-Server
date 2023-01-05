@@ -1,13 +1,22 @@
 /* eslint-disable prettier/prettier */
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import {
+  TypeOrmModuleAsyncOptions,
+  TypeOrmModuleOptions,
+} from '@nestjs/typeorm';
 
-export const typeORMConfig: TypeOrmModuleOptions = {
-  type: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  username: 'root',
-  password: 'Aa123456',
-  database: 'rock_merch',
-  entities: ['dist/**/*.entity{.ts,.js}'],
-  synchronize: true,
+export const typeORMAsyncConfig: TypeOrmModuleAsyncOptions = {
+  inject: [ConfigService],
+  useFactory: async (
+    configService: ConfigService,
+  ): Promise<TypeOrmModuleOptions> => ({
+    type: 'mysql',
+    host: configService.get('DB_HOST'),
+    port: configService.get('DB_PORT'),
+    username: configService.get('DB_USER'),
+    password: configService.get('DB_PASSWORD'),
+    database: configService.get('DB_NAME'),
+    entities: ['dist/**/*.entity{.ts,.js}'],
+    synchronize: true,
+  }),
 };
