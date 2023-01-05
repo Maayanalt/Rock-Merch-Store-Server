@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CartModule } from './cart/cart.module';
-import { typeORMConfig } from './config/typeorm.config';
+import { typeORMAsyncConfig } from './config/typeorm.config';
 import { ItemsModule } from './items/items.module';
 import { OrdersModule } from './orders/orders.module';
 import { UsersModule } from './users/users.module';
@@ -13,7 +13,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot(typeORMConfig),
+    TypeOrmModule.forRootAsync(typeORMAsyncConfig),
     ItemsModule,
     UsersModule,
     CartModule,
