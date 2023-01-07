@@ -5,7 +5,7 @@ import { ResetPassword } from './entities/reset-password.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
-import * as bcrypt from 'bcrypt';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable()
 export class ResetPasswordService {
@@ -48,8 +48,15 @@ export class ResetPasswordService {
       .catch((err) => console.log(err));
   }
 
+  hashToken(token: string) {
+    return CryptoJS.HmacSHA256(
+      token,
+      this.configService.get('SECRET'),
+    ).toString();
+  }
+
   async saveTokenToDB(token: string, userID: number) {
-    const hashedToken = await bcrypt.hash(token, 10);
+    const hashedToken = this.hashToken(token);
     const expiration = new Date(new Date().getTime() + 60 * 60 * 1000); //token expires after one hour
     const resetEntity = this.resetPasswordRepository.create({
       token: hashedToken,
