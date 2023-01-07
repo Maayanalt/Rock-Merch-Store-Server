@@ -6,12 +6,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import * as CryptoJS from 'crypto-js';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ResetPasswordService {
   constructor(
     @InjectRepository(ResetPassword)
     private resetPasswordRepository: Repository<ResetPassword>,
+    private usersService: UsersService,
     private readonly mailerService: MailerService,
     private configService: ConfigService,
   ) {}
@@ -55,6 +57,13 @@ export class ResetPasswordService {
     ).toString();
   }
 
+  findOne(hashedToken: string) {
+    return this.resetPasswordRepository.findOne({
+      where: { token: hashedToken },
+      relations: ['user'],
+    });
+  }
+
   async saveTokenToDB(token: string, userID: number) {
     const hashedToken = this.hashToken(token);
     const expiration = new Date(new Date().getTime() + 60 * 60 * 1000); //token expires after one hour
@@ -64,5 +73,10 @@ export class ResetPasswordService {
       user: { id: userID },
     });
     await this.resetPasswordRepository.save(resetEntity);
+  }
+
+  async resetPassword(password: string, userID: number) {
+    await this.resetPasswordRepository.delete({ user: { id: userID } });
+    this.usersService.update({ newPassword: password }, userID);
   }
 }
