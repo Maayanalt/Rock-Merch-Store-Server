@@ -8,6 +8,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
   const origin = configService.get('CORS_ORIGIN');
+  const secret = configService.get('SECRET');
   app.enableCors({
     credentials: true,
     origin,
@@ -15,7 +16,7 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: 'my-secret',
+      secret,
       resave: false,
       saveUninitialized: false,
       cookie: { secure: false },
