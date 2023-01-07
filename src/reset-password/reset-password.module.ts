@@ -9,9 +9,10 @@ import { ResetPasswordController } from './reset-password.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ResetPassword } from './entities/reset-password.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ForgotPasswordMiddleware } from 'src/middlewares/forgot-password.middleware';
 import { UsersModule } from 'src/users/users.module';
 import { mailerAsyncConfig } from 'src/config/mailer.config';
+import { ForgotPasswordMiddleware } from 'src/middlewares/forgot-password.middleware';
+import { ResetPasswordMiddleware } from 'src/middlewares/reset-password.middleware';
 
 @Module({
   imports: [
@@ -27,5 +28,9 @@ export class ResetPasswordModule implements NestModule {
     consumer
       .apply(ForgotPasswordMiddleware)
       .forRoutes({ path: 'reset-password/email', method: RequestMethod.POST });
+
+    consumer
+      .apply(ResetPasswordMiddleware)
+      .forRoutes({ path: 'reset-password', method: RequestMethod.POST });
   }
 }
