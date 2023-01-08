@@ -10,6 +10,16 @@ export class ItemsController {
     return this.itemsService.getCategories();
   }
 
+  @Get('category/parent/:id')
+  findByParentCategory(@Param('id') id: string) {
+    return this.itemsService.getItemsByParentCategory(+id);
+  }
+
+  @Get('category/:id')
+  findByCategory(@Param('id') id: string) {
+    return this.itemsService.getItemsByCategory(+id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemsService.getOneItem(+id);
