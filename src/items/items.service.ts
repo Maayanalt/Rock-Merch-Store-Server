@@ -68,4 +68,31 @@ export class ItemsService {
   findOne(id: number): Promise<Items> {
     return this.itemsRepository.findOne(id);
   }
+
+  async getItemsByCategory(categoryID: number): Promise<Items[]> {
+    const newItems = [];
+    const items = await this.itemsRepository.find({
+      where: { category: { id: categoryID } },
+    });
+    for (const item of items) {
+      const newItem = await this.getOneItem(item.id);
+      newItems.push(newItem);
+    }
+
+    return newItems;
+  }
+
+  async getItemsByParentCategory(categoryID: number): Promise<Items[]> {
+    const newItems = [];
+    const items = await this.itemsRepository.find({
+      where: { category: { parentCategory: { id: categoryID } } },
+      relations: ['category'],
+    });
+    for (const item of items) {
+      const newItem = await this.getOneItem(item.id);
+      newItems.push(newItem);
+    }
+
+    return newItems;
+  }
 }
