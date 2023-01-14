@@ -65,6 +65,16 @@ export class ItemsService {
     });
   }
 
+  async organizeItems(items: Items[]) {
+    const newItems = [];
+    for (const item of items) {
+      const newItem = await this.getOneItem(item.id);
+      newItems.push(newItem);
+    }
+
+    return newItems;
+  }
+
   findOne(id: number): Promise<Items> {
     return this.itemsRepository.findOne(id);
   }
