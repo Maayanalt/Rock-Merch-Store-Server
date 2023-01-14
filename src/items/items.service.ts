@@ -105,4 +105,49 @@ export class ItemsService {
 
     return newItems;
   }
+
+  async paginateAllItems(
+    limit: number,
+    page: number,
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
+
+  async paginateItemsByCategory(
+    categoryID: number,
+    limit: number,
+    page: number,
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      where: { category: { id: categoryID } },
+      relations: ['category'],
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
+
+  async paginateItemsByParentCategory(
+    categoryID: number,
+    limit: number,
+    page: number,
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      where: { category: { parentCategory: { id: categoryID } } },
+      relations: ['category'],
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
 }
