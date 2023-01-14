@@ -1,4 +1,12 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
+import { Items } from './entities/items.entity';
 import { ItemsService } from './items.service';
 
 @Controller('items')
@@ -11,13 +19,27 @@ export class ItemsController {
   }
 
   @Get('category/parent/:id')
-  findByParentCategory(@Param('id') id: string) {
-    return this.itemsService.getItemsByParentCategory(+id);
+  async paginateCategoryParent(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateItemsByParentCategory(
+      +id,
+      limit,
+      page - 1,
+    );
   }
 
   @Get('category/:id')
-  findByCategory(@Param('id') id: string) {
-    return this.itemsService.getItemsByCategory(+id);
+  async paginateCategory(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateItemsByCategory(+id, limit, page - 1);
   }
 
   @Get(':id')
@@ -26,7 +48,11 @@ export class ItemsController {
   }
 
   @Get()
-  findAll() {
-    return this.itemsService.getAll();
+  async paginateAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateAllItems(limit, page - 1);
   }
 }
