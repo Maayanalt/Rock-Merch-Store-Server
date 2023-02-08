@@ -43,6 +43,10 @@ export class ItemsService {
     });
   }
 
+  findOne(id: number): Promise<Items> {
+    return this.itemsRepository.findOne(id);
+  }
+
   async organizeItems(items: Items[]) {
     const newItems = [];
     for (const item of items) {
@@ -51,6 +55,42 @@ export class ItemsService {
     }
 
     return newItems;
+  }
+
+  async getBestSellerItems(page: number, limit: number): Promise<Items[]> {
+    return this.itemsRepository
+      .createQueryBuilder('item')
+      .leftJoin('item.orderDetails', 'order_details')
+      .select('SUM(order_details.quantity)', 'sum')
+      .addSelect('item.id', 'id')
+      .groupBy('id')
+      .orderBy('sum', 'DESC')
+      .addOrderBy('id', 'ASC')
+      .offset(page * limit)
+      .limit(limit)
+      .getRawMany();
+  }
+
+  async getBestSellerCategoryItems(
+    page: number,
+    limit: number,
+    categoryID: number,
+    parent = false,
+  ): Promise<Items[]> {
+    const whereColumn = parent ? 'categories.parentCategory' : 'categories.id';
+    return this.itemsRepository
+      .createQueryBuilder('item')
+      .leftJoin('item.category', 'categories')
+      .leftJoin('item.orderDetails', 'order_details')
+      .select('SUM(order_details.quantity)', 'sum')
+      .addSelect('item.id', 'id')
+      .where(`${whereColumn} = :id`, { id: categoryID })
+      .groupBy('id')
+      .orderBy('sum', 'DESC')
+      .addOrderBy('id', 'ASC')
+      .offset(page * limit)
+      .limit(limit)
+      .getRawMany();
   }
 
   async paginateAllItems(
