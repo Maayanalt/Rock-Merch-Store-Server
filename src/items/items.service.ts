@@ -97,11 +97,9 @@ export class ItemsService {
     limit: number,
     page: number,
   ): Promise<[Items[], number]> {
-    const [items, total] = await this.itemsRepository.findAndCount({
-      take: limit,
-      skip: page * limit,
-    });
+    const items = await this.getBestSellerItems(page, limit);
     const newItems = await this.organizeItems(items);
+    const total = await this.itemsRepository.count();
 
     return [newItems, total];
   }
@@ -111,13 +109,16 @@ export class ItemsService {
     limit: number,
     page: number,
   ): Promise<[Items[], number]> {
-    const [items, total] = await this.itemsRepository.findAndCount({
+    const items = await this.getBestSellerCategoryItems(
+      page,
+      limit,
+      categoryID,
+    );
+    const newItems = await this.organizeItems(items);
+    const total = await this.itemsRepository.count({
       where: { category: { id: categoryID } },
       relations: ['category'],
-      take: limit,
-      skip: page * limit,
     });
-    const newItems = await this.organizeItems(items);
 
     return [newItems, total];
   }
@@ -127,13 +128,17 @@ export class ItemsService {
     limit: number,
     page: number,
   ): Promise<[Items[], number]> {
-    const [items, total] = await this.itemsRepository.findAndCount({
+    const items = await this.getBestSellerCategoryItems(
+      page,
+      limit,
+      categoryID,
+      true,
+    );
+    const newItems = await this.organizeItems(items);
+    const total = await this.itemsRepository.count({
       where: { category: { parentCategory: { id: categoryID } } },
       relations: ['category'],
-      take: limit,
-      skip: page * limit,
     });
-    const newItems = await this.organizeItems(items);
 
     return [newItems, total];
   }
