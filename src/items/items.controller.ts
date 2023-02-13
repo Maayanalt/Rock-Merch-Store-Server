@@ -42,6 +42,48 @@ export class ItemsController {
     return this.itemsService.paginateItemsByCategory(+id, limit, page - 1);
   }
 
+  @Get('/sorted/category/parent/:id')
+  async paginateParentCategorySort(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('order') order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateItemsParentCategorySorted(
+      +id,
+      limit,
+      page - 1,
+      order,
+    );
+  }
+
+  @Get('/sorted/category/:id')
+  async paginateCategorySort(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('order') order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateItemsByCategorySorted(
+      +id,
+      limit,
+      page - 1,
+      order,
+    );
+  }
+
+  @Get('/sorted')
+  async paginateAllSort(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('order') order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateAllItemsSorted(limit, page - 1, order);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemsService.getOneItem(+id);
