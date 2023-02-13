@@ -142,4 +142,55 @@ export class ItemsService {
 
     return [newItems, total];
   }
+
+  async paginateAllItemsSorted(
+    limit: number,
+    page: number,
+    order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      order: { price: order },
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
+
+  async paginateItemsByCategorySorted(
+    categoryID: number,
+    limit: number,
+    page: number,
+    order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      where: { category: { id: categoryID } },
+      order: { price: order },
+      relations: ['category'],
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
+
+  async paginateItemsParentCategorySorted(
+    categoryID: number,
+    limit: number,
+    page: number,
+    order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      where: { category: { parentCategory: { id: categoryID } } },
+      order: { price: order },
+      relations: ['category'],
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
 }
