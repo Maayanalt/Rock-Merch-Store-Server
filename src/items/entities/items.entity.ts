@@ -31,7 +31,7 @@ export class Items {
   price: number;
 
   @Column({
-    length: 300,
+    length: 500,
     default: null,
   })
   description: string;
