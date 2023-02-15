@@ -42,6 +42,32 @@ export class ItemsController {
     return this.itemsService.paginateItemsByCategory(+id, limit, page - 1);
   }
 
+  @Get('search/sorted')
+  async paginateSearchSorted(
+    @Query('q') q: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('order') order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateItemsBySearchSort(
+      q,
+      limit,
+      page - 1,
+      order,
+    );
+  }
+
+  @Get('search')
+  async paginateSearch(
+    @Query('q') q: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<[Items[], number]> {
+    limit = limit > 20 ? 20 : limit;
+    return this.itemsService.paginateItemsBySearch(q, limit, page - 1);
+  }
+
   @Get('/sorted/category/parent/:id')
   async paginateParentCategorySort(
     @Param('id') id: string,
