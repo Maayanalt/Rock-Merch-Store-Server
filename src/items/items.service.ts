@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Categories } from './entities/categories.entity';
 import { Items } from './entities/items.entity';
 import { ItemDetails } from './entities/itemDetails.entity';
@@ -85,6 +85,28 @@ export class ItemsService {
       .select('SUM(order_details.quantity)', 'sum')
       .addSelect('item.id', 'id')
       .where(`${whereColumn} = :id`, { id: categoryID })
+      .groupBy('id')
+      .orderBy('sum', 'DESC')
+      .addOrderBy('id', 'ASC')
+      .offset(page * limit)
+      .limit(limit)
+      .getRawMany();
+  }
+
+  async getBestSellerItemsSearch(
+    stringForSearch: string,
+    page: number,
+    limit: number,
+  ): Promise<Items[]> {
+    return this.itemsRepository
+      .createQueryBuilder('item')
+      .leftJoin('item.orderDetails', 'order_details')
+      .select('SUM(order_details.quantity)', 'sum')
+      .addSelect('item.id', 'id')
+      .where('item.name like :search', { search: `%${stringForSearch}%` })
+      .orWhere('item.description like :search', {
+        search: `%${stringForSearch}%`,
+      })
       .groupBy('id')
       .orderBy('sum', 'DESC')
       .addOrderBy('id', 'ASC')
@@ -186,6 +208,48 @@ export class ItemsService {
       where: { category: { parentCategory: { id: categoryID } } },
       order: { price: order },
       relations: ['category'],
+      take: limit,
+      skip: page * limit,
+    });
+    const newItems = await this.organizeItems(items);
+
+    return [newItems, total];
+  }
+
+  async paginateItemsBySearch(
+    stringForSearch: string,
+    limit: number,
+    page: number,
+  ): Promise<[Items[], number]> {
+    const items = await this.getBestSellerItemsSearch(
+      stringForSearch,
+      page,
+      limit,
+    );
+    const newItems = await this.organizeItems(items);
+
+    const total = await this.itemsRepository.count({
+      where: [
+        { name: Like(`%${stringForSearch}%`) },
+        { description: Like(`%${stringForSearch}%`) },
+      ],
+    });
+
+    return [newItems, total];
+  }
+
+  async paginateItemsBySearchSort(
+    stringForSearch: string,
+    limit: number,
+    page: number,
+    order: 'ASC' | 'DESC',
+  ): Promise<[Items[], number]> {
+    const [items, total] = await this.itemsRepository.findAndCount({
+      where: [
+        { name: Like(`%${stringForSearch}%`) },
+        { description: Like(`%${stringForSearch}%`) },
+      ],
+      order: { price: order },
       take: limit,
       skip: page * limit,
     });
