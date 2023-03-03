@@ -1,4 +1,4 @@
-# Rock Merch online store backend - ***in progress***
+# Rock Merch online store backend
 
 The server side of the project.
 ## 💻Technologies
