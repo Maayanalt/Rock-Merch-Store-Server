@@ -10,6 +10,7 @@ import { OrdersModule } from './orders/orders.module';
 import { ResetPasswordModule } from './reset-password/reset-password.module';
 import { UsersModule } from './users/users.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     WishlistModule,
     OrdersModule,
     ResetPasswordModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
