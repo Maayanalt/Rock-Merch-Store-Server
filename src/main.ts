@@ -19,7 +19,7 @@ async function bootstrap() {
       secret,
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: false },
+      cookie: { secure: true },
     }),
   );
   app.setGlobalPrefix('api');
